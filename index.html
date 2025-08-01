@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8" />
@@ -8,7 +8,7 @@
       background-color: #fef9f3;
       font-family: 'Tahoma', sans-serif;
       color: #333;
-      line-height: 1.5; /* کاهش فاصله بین خطوط */
+      line-height: 2.2;
       padding: 50px;
       max-width: 900px;
       margin: auto;
@@ -16,8 +16,7 @@
       transition: opacity 0.5s ease;
     }
 
-    .next-button {
-      display: block;
+    .start-button, .next-button, .prev-button, .restart-button {
       margin-top: 40px;
       text-align: center;
     }
@@ -30,47 +29,88 @@
       border-radius: 6px;
       cursor: pointer;
       font-size: 16px;
-      transition: background-color 0.3s ease;
+      margin: 5px;
     }
 
     button:hover {
       background-color: #922b21;
+    }
+
+    #content {
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    #content p {
+      animation: fadeInText 1s ease forwards;
+    }
+
+    @keyframes fadeInText {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 20px;
+        font-size: 14px;
+      }
+
+      button {
+        width: 90%;
+        font-size: 15px;
+      }
     }
   </style>
 </head>
 <body>
 
   <!-- موزیک پس‌زمینه -->
-  <audio id="bg-music" autoplay loop hidden>
-    <source src="https://dreamusic.ir/wp-content/uploads/2020/05/14.-Una-Mattina-Dreamusic.ir_.mp3?_=1" type="audio/mpeg">
+  <audio id="bg-music" loop hidden>
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_1f2b4ec79d.mp3" type="audio/mpeg">
     مرورگر شما از پخش موزیک پشتیبانی نمی‌کند.
   </audio>
 
+  <!-- دکمه شروع -->
+  <div class="start-button">
+    <button id="startButton">شروع</button>
+  </div>
+
+  <!-- محتوای داستان -->
   <div id="content"></div>
 
-  <div class="next-button">
+  <!-- دکمه‌ها -->
+  <div class="prev-button" style="display: none;">
+    <button id="prevPage">صفحه قبل</button>
+  </div>
+
+  <div class="next-button" style="display: none;">
     <button id="nextPage">صفحه بعد</button>
+  </div>
+
+  <div class="restart-button" style="display: none;">
+    <button id="restartBtn">شروع دوباره</button>
   </div>
 
   <script>
     const pages = [
-      // صفحه ۱ با متن اضافه شده
-      `امروز، 25 می 2010<br>
+      // صفحه ۱
+      `امروز، 25 می 2010<br><br>
       ده ساله که فقط سکوت کردم. فقط نگاه کردم. شاید خیلیا منو قضاوت کنن... ولی هیچ‌کس نفهمید اون شب، چه بر سرم اومد.<br>
-      اما دیگه وقتشه. وقتشه که همه‌چیزو بگم. حداقل به خودم.<br>
+      اما دیگه وقتشه. وقتشه که همه‌چیزو بگم. حداقل به خودم.<br><br>
       ده سال پیش... روزی که استیو مرد... دوباره دیدمش. همون سایه‌ای که مدت‌ها دنبالم می‌کرد. همیشه فقط یه سایه بود. دور، گنگ... اما اون روز، نزدیک‌تر از همیشه ایستاده بود.<br>
       نقاشی‌ام رو نیمه‌کاره رها کردم و دویدم توی خونه. داشتم همون سایه رو می‌کشیدم. فقط یه بدن بی‌چهره.<br>
       همه‌چیز خیلی سریع اتفاق افتاد. از در پشتی اومد تو. بدون در زدن.<br>
       کلید یدکی، همیشه توی گلدون کنار در بود... همون‌جایی که فقط خودم می‌دونستم.<br>
-      ولی اون...<br>
-      اون هم می‌دونست.<br>
+      ولی اون... اون هم می‌دونست.<br><br>
       اسلحه‌ای رو سمتم گرفت. تا چشم بهم زدم، به صندلی بسته شده بودم. چند دقیقه بعد، استیو برگشت. فریاد زدم، تلاش کردم... اما دیر شده بود.<br>
       او هم به صندلی بسته شد. پشت سر من.<br>
-      تا اون لحظه، فکر می‌کردم استیو قربانیه. اما وقتی اون مرد شروع کرد به حرف زدن... دنیا از هم پاشید. گفت که استیو با همسرش، کاترین، رابطه داشته. استیو؟<br>
-      عشق زندگی من؟<br>
+      تا اون لحظه، فکر می‌کردم استیو قربانیه. اما وقتی اون مرد شروع کرد به حرف زدن... دنیا از هم پاشید.<br>
+      گفت که استیو با همسرش، کاترین، رابطه داشته. استیو؟<br>
+      عشق زندگی من؟<br><br>
       اون هنوز حرف می‌زد. گفت که منو دنبال می‌کرده، چون می‌خواسته بدونه زن یک مرد کثیف چه جور آدمیه. ولی فهمیده که من هم فقط یه قربانی‌ام.<br>
       و بعد اسلحه رو به سمت استیو گرفت و گفت باید انتخاب کنه؛ زندگی خودش یا من.<br>
-      شروع کرد به شمردن.<br>
+      شروع کرد به شمردن.<br><br>
       یک...<br>
       دو...<br>
       و استیو گفت:<br>
@@ -95,64 +135,77 @@
       ارجاع‌دهنده: دپارتمان روان‌درمانی دانشگاه میل‌وود<br>
       روان‌پزشک معالج: دکتر کارن اسلوآن، MD<br>
       تخصص: روان‌پزشکی بالینی – اختلالات تجزیه‌ای و هویتی<br><br>
-      <strong>تشخیص نهایی:</strong> اختلال تجزیه هویت (Dissociative Identity Disorder – D.I.D) مطابق با ملاک‌های DSM-IV<br><br>
+      <strong>تشخیص نهایی:</strong> اختلال تجزیه هویت (D.I.D) مطابق با ملاک‌های DSM-IV<br><br>
       <strong>شرح مختصر و ارزیابی بالینی:</strong><br>
-      بیمار، آقای جاناتان هریسون، مردی ۳۵ ساله، با سابقه‌ی عملکرد تحصیلی و حرفه‌ای ممتاز در رشته روان‌شناسی جنایی، جهت ارزیابی روان‌پزشکی به این مرکز ارجاع داده شد. گزارش‌ها حاکی از بروز نوسانات رفتاری، فواصل زمانی از دست‌رفته (memory lapses)، و حالات احساسی و کلامی متضاد در دوره‌های زمانی کوتاه‌مدت است.<br>
-      در جلسات مصاحبه، بیمار چندین بار به‌طور ناخودآگاه تغییر لحن، زبان بدنی، و حتی سبک گفتار داشت. خاطرات ناپیوسته، احساس غریبه بودن نسبت به تصمیمات خود، و بی‌اطلاعی از اتفاقاتی که توسط «خود دیگر» انجام شده‌اند، از ویژگی‌های بارز مشاهده‌شده بودند.<br>
-      بر اساس مصاحبه‌های بالینی، آزمون‌های شناختی و تجزیه‌ای (از جمله SCID-D) و ارزیابی پیوسته در طول شش هفته، تشخیص اختلال تجزیه هویت قطعی ارزیابی شد. بیمار دست‌کم دو هویت مجزا با الگوهای رفتاری، حافظه و خلق متفاوت دارد که در شرایط خاص (خصوصاً استرس بالا، مواجهه با خیانت همسر، یا موقعیت‌های اخلاقی حاد) فعال می‌شوند.`,
+      بیمار، آقای جاناتان هریسون، مردی ۳۵ ساله، با سابقه‌ی عملکرد تحصیلی و حرفه‌ای ممتاز در رشته روان‌شناسی جنایی، جهت ارزیابی روان‌پزشکی به این مرکز ارجاع داده شد. گزارش‌ها حاکی از بروز نوسانات رفتاری، فواصل زمانی از دست‌رفته، و حالات احساسی و کلامی متضاد است.<br>
+      بیمار در جلسات چندین بار به‌طور ناخودآگاه تغییر لحن، زبان بدنی و سبک گفتار داشت. خاطرات ناپیوسته، احساس غریبه بودن نسبت به تصمیمات خود، و بی‌اطلاعی از اتفاقاتی که توسط «خود دیگر» انجام شده‌اند، از ویژگی‌های بارز مشاهده‌شده بودند.<br>
+      با توجه به مصاحبه‌های بالینی، آزمون‌های SCID-D و ارزیابی شش‌هفته‌ای، تشخیص اختلال تجزیه هویت قطعی بود.`,
 
       // صفحه ۳
-      `ما گفتیم یک قتل رخ داد. گفتیم کسی سکوت کرد، کسی مُرد، و کسی دیوونه شد.<br><br>
+      `ما گفتیم یک قتل رخ داد. گفتیم کسی سکوت کرد، کسی مُرد، و کسی دیوونه شد.<br>
       ولی نگفتیم از کجا شروع شد…<br><br>
       هیچ‌کس نگفت از شبی که اون بچه با چشم‌های پر اشک، پشت در بسته‌ی یه اتاق خوابید.<br>
       از وقتی ترس، شد عادی‌ترین حسش.<br>
-      از وقتی یاد گرفت دردش رو پنهون کنه، چون کسی حوصله‌شو نداشت.<br>
-      هیچ‌کس اون شب‌ها رو ندید.<br>
-      وقتی بغض رو قورت می‌داد و به خودش می‌گفت: «من مهم نیستم.»<br><br>
+      از وقتی یاد گرفت دردش رو پنهون کنه، چون کسی حوصله‌شو نداشت.<br><br>
       پرونده‌ای که خوندین، فقط درباره‌ی یه قتل نبود.<br>
       یه آینه بود؛ که خیلی از ما جرات نکردیم توش زل بزنیم.<br>
-      ترومای کودکی، یه خاطره‌ی مبهم نیست. یه سمیه که آهسته وارد خون می‌شه…<br>
-      و یه روز، بی‌هوا، یه آدم رو منفجر می‌کنه.<br>
-      کسی قاتل می‌شه… ولی قبلش هزار بار مرده بوده.<br><br>
-      ما این پرونده رو ساختیم، نه برای قضاوت.<br>
-      برای اینکه بفهمیم چقدر آسیب، می‌تونه بی‌صدا توی یه انسان ریشه کنه… فقط چون کسی وقت نکرد بپرسه: «چی شده؟»<br>
+      ترومای کودکی یه سمه که آهسته وارد خون می‌شه… و یه روز، بی‌هوا، یه آدم رو منفجر می‌کنه.<br><br>
       کاش این پرونده، آخرین باری باشه که زخم‌های کودکانه، با خون شسته می‌شن.<br>
-      کاش بچه‌های فردا، اینجوری از خودشون دفاع نکنن… با سکوت، با جنون، با خشمی که شکل مرگ می‌گیره.<br>
-      کاش… ما بزرگ‌ترا، بفهمیم که بچگی رو نباید جدی نگرفت… باید باهاش زندگی کرد. باید نگهش داشت. باید حفظش کرد، تا یه روز… دنیا، از درون یه کودکِ خاموش، منفجر نشه.<br><br>
+      کاش بچه‌های فردا اینجوری از خودشون دفاع نکنن… با سکوت، با جنون، با خشمی که شکل مرگ می‌گیره.<br><br>
       دوست دار شما، بچه‌های مارکوکیلو`
     ];
 
     let currentPage = 0;
     const contentDiv = document.getElementById("content");
+    const startButton = document.getElementById("startButton");
     const nextButton = document.getElementById("nextPage");
+    const prevButton = document.getElementById("prevPage");
+    const restartBtn = document.getElementById("restartBtn");
+    const nextButtonDiv = document.querySelector(".next-button");
+    const prevButtonDiv = document.querySelector(".prev-button");
+    const restartDiv = document.querySelector(".restart-button");
+    const music = document.getElementById("bg-music");
 
     function renderPage(index) {
       contentDiv.style.opacity = 0;
       setTimeout(() => {
         contentDiv.innerHTML = `<p>${pages[index]}</p>`;
         contentDiv.style.opacity = 1;
+
+        prevButtonDiv.style.display = index > 0 ? "block" : "none";
+        nextButtonDiv.style.display = index < pages.length - 1 ? "block" : "none";
+        restartDiv.style.display = index === pages.length - 1 ? "block" : "none";
       }, 200);
     }
+
+    startButton.addEventListener("click", () => {
+      music.volume = 1.0;
+      music.play().catch(() => {
+        console.log("موزیک پخش نشد.");
+      });
+
+      renderPage(currentPage);
+      startButton.style.display = "none";
+    });
 
     nextButton.addEventListener("click", () => {
       if (currentPage < pages.length - 1) {
         currentPage++;
         renderPage(currentPage);
-        if (currentPage === pages.length - 1) {
-          nextButton.style.display = "none";
-        }
       }
     });
 
-    window.onload = () => {
-      renderPage(currentPage);
-      const music = document.getElementById("bg-music");
-      music.volume = 1.0;
-      music.play().catch(() => {
-        console.log("برای پخش موزیک باید کاربر کلیک کند.");
-      });
-    };
-  </script>
+    prevButton.addEventListener("click", () => {
+      if (currentPage > 0) {
+        currentPage--;
+        renderPage(currentPage);
+      }
+    });
 
+    restartBtn.addEventListener("click", () => {
+      currentPage = 0;
+      renderPage(currentPage);
+    });
+  </script>
 </body>
 </html>
