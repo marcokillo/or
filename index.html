@@ -4,35 +4,6 @@
   <meta charset="UTF-8" />
   <title>دفترچه خاطرات</title>
   <style>
-    /* صفحه شروع با عکس بک‌گراند فول‌اسکرین */
-    #startScreen {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-image: url('https://thumbs.dreamstime.com/b/old-book-cover-24489981.jpg');
-      background-size: cover;
-      background-position: center;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      z-index: 1000;
-    }
-
-    #startScreen button {
-      padding: 15px 30px;
-      font-size: 24px;
-      border: none;
-      border-radius: 8px;
-      background-color: rgba(192, 57, 43, 0.85);
-      color: white;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    #startScreen button:hover {
-      background-color: rgba(146, 43, 33, 0.85);
-    }
-
-    /* استایل کل صفحه داستان */
     body {
       background-color: #fef9f3;
       font-family: 'Tahoma', sans-serif;
@@ -90,20 +61,44 @@
         font-size: 15px;
       }
     }
+
+    /* بک‌گراند صفحه شروع */
+    body.start-screen {
+      background: url('https://thumbs.dreamstime.com/b/old-book-cover-24489981.jpg') no-repeat center center fixed;
+      background-size: cover;
+      padding: 0;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    body.start-screen #content,
+    body.start-screen .next-button,
+    body.start-screen .prev-button,
+    body.start-screen .restart-button {
+      display: none;
+    }
+
+    body.start-screen .start-button {
+      position: relative;
+      z-index: 2;
+    }
   </style>
 </head>
-<body>
-
-  <!-- صفحه شروع -->
-  <div id="startScreen">
-    <button id="startButton">شروع</button>
-  </div>
+<body class="start-screen">
 
   <!-- موزیک پس‌زمینه -->
   <audio id="bg-music" loop hidden>
     <source src="https://dreamusic.ir/wp-content/uploads/2020/05/14.-Una-Mattina-Dreamusic.ir_.mp3?_=1" type="audio/mpeg">
     مرورگر شما از پخش موزیک پشتیبانی نمی‌کند.
   </audio>
+
+  <!-- دکمه شروع -->
+  <div class="start-button">
+    <button id="startButton">شروع</button>
+  </div>
 
   <!-- محتوای داستان -->
   <div id="content"></div>
@@ -123,6 +118,7 @@
 
   <script>
     const pages = [
+      // صفحه ۱
       `امروز، 25 می 2010<br><br>
       ده ساله که فقط سکوت کردم. فقط نگاه کردم. شاید خیلیا منو قضاوت کنن... ولی هیچ‌کس نفهمید اون شب، چه بر سرم اومد.<br>
       اما دیگه وقتشه. وقتشه که همه‌چیزو بگم. حداقل به خودم.<br><br>
@@ -156,6 +152,7 @@
       جاناتان...<br>
       کارآگاهی که پرونده قتل استیو رو بعد ده سال پیگیری می‌کرد. همون مردی که این بازی رو شروع کرده بود.`,
 
+      // صفحه ۲
       `بیمار: جاناتان هریسون<br>
       تاریخ: 1 اکتبر 2000<br>
       شماره پرونده: JH/2000/473<br>
@@ -166,43 +163,41 @@
       <strong>شرح مختصر و ارزیابی بالینی:</strong><br>
       بیمار، آقای جاناتان هریسون، مردی ۳۵ ساله، با سابقه‌ی عملکرد تحصیلی و حرفه‌ای ممتاز در رشته روان‌شناسی جنایی، جهت ارزیابی روان‌پزشکی به این مرکز ارجاع داده شد. گزارش‌ها حاکی از بروز نوسانات رفتاری، فواصل زمانی از دست‌رفته، و حالات احساسی و کلامی متضاد است.<br>
       بیمار در جلسات چندین بار به‌طور ناخودآگاه تغییر لحن، زبان بدنی و سبک گفتار داشت. خاطرات ناپیوسته، احساس غریبه بودن نسبت به تصمیمات خود، و بی‌اطلاعی از اتفاقاتی که توسط «خود دیگر» انجام شده‌اند، از ویژگی‌های بارز مشاهده‌شده بودند.<br>
-      با توجه به مصاحبه‌های بالینی، آزمون‌های SCID-D و ارزیابی شش‌هفته‌ای، تشخیص اختلال تجزیه هویت (DID) برای این بیمار تایید شد.<br><br>
-      <strong>یادداشت‌های تکمیلی:</strong><br>
-      به دلیل خطر بالقوه‌ی خشونت، بیمار تحت مراقبت‌های ویژه قرار گرفت و برنامه‌ی درمانی جامع شامل روان‌درمانی شناختی-رفتاری، مدیریت استرس، و در صورت لزوم دارودرمانی آغاز شد.<br>
-      پرونده فعلی در تاریخ ۲۵ نوامبر ۲۰۰۰ به‌روزرسانی و مستندسازی شده است.`,
+      با توجه به مصاحبه‌های بالینی، آزمون‌های SCID-D و ارزیابی شش‌هفته‌ای، تشخیص اختلال تجزیه هویت قطعی بود.`,
 
- `ما گفتیم یک قتل رخ داد.<br><br>
-گفتیم کسی سکوت کرد، کسی مُرد، و کسی دیوونه شد.<br>
-ولی نگفتیم از کجا شروع شد…<br>
-هیچ‌کس نگفت از شبی که اون بچه با چشم‌های پر اشک، پشت در بسته‌ی یه اتاق خوابید.<br>
-از وقتی ترس، شد عادی‌ترین حسش.<br>
-از وقتی یاد گرفت دردش رو پنهون کنه، چون کسی حوصله‌شو نداشت.<br>
-هیچ‌کس اون شب‌ها رو ندید.<br>
-وقتی بغض رو قورت می‌داد و به خودش می‌گفت:<br>
-«من مهم نیستم.»<br><br>
-پرونده‌ای که خوندین، فقط درباره‌ی یه قتل نبود.<br>
-یه آینه بود؛<br>
-که خیلی از ما جرات نکردیم توش زل بزنیم.<br><br>
-ترومای کودکی، یه خاطره‌ی مبهم نیست.<br>
-یه سمیه که آهسته وارد خون می‌شه…<br>
-و یه روز، بی‌هوا، یه آدم رو منفجر می‌کنه.<br><br>
-کسی قاتل می‌شه…<br>
-ولی قبلش هزار بار مرده بوده.<br><br>
-ما این پرونده رو ساختیم، نه برای قضاوت.<br>
-برای اینکه بفهمیم چقدر آسیب، می‌تونه بی‌صدا توی یه انسان ریشه کنه…<br>
-فقط چون کسی وقت نکرد بپرسه:<br>
-«چی شده؟»<br><br>
-کاش این پرونده، آخرین باری باشه که زخم‌های کودکانه، با خون شسته می‌شن.<br>
-کاش بچه‌های فردا، اینجوری از خودشون دفاع نکنن…<br>
-با سکوت، با جنون، با خشمی که شکل مرگ می‌گیره.<br>
-کاش… ما بزرگ‌ترا، بفهمیم که بچگی رو نباید جدی نگرفت…<br>
-باید باهاش زندگی کرد. باید نگهش داشت.<br>
-باید حفظش کرد، تا یه روز… دنیا، از درون یه کودکِ خاموش، منفجر نشه<br><br>
-دوست دار شما  بچه های مارکوکیلو`;
+      // صفحه ۳ (اصلاح شده)
+      `ما گفتیم یک قتل رخ داد.<br><br>
+      گفتیم کسی سکوت کرد، کسی مُرد، و کسی دیوونه شد.<br>
+      ولی نگفتیم از کجا شروع شد…<br>
+      هیچ‌کس نگفت از شبی که اون بچه با چشم‌های پر اشک، پشت در بسته‌ی یه اتاق خوابید.<br>
+      از وقتی ترس، شد عادی‌ترین حسش.<br>
+      از وقتی یاد گرفت دردش رو پنهون کنه، چون کسی حوصله‌شو نداشت.<br>
+      هیچ‌کس اون شب‌ها رو ندید.<br>
+      وقتی بغض رو قورت می‌داد و به خودش می‌گفت:<br>
+      «من مهم نیستم.»<br><br>
+      پرونده‌ای که خوندین، فقط درباره‌ی یه قتل نبود.<br>
+      یه آینه بود؛<br>
+      که خیلی از ما جرات نکردیم توش زل بزنیم.<br><br>
+      ترومای کودکی، یه خاطره‌ی مبهم نیست.<br>
+      یه سمیه که آهسته وارد خون می‌شه…<br>
+      و یه روز، بی‌هوا، یه آدم رو منفجر می‌کنه.<br><br>
+      کسی قاتل می‌شه…<br>
+      ولی قبلش هزار بار مرده بوده.<br><br>
+      ما این پرونده رو ساختیم، نه برای قضاوت.<br>
+      برای اینکه بفهمیم چقدر آسیب، می‌تونه بی‌صدا توی یه انسان ریشه کنه…<br>
+      فقط چون کسی وقت نکرد بپرسه:<br>
+      «چی شده؟»<br><br>
+      کاش این پرونده، آخرین باری باشه که زخم‌های کودکانه، با خون شسته می‌شن.<br>
+      کاش بچه‌های فردا، اینجوری از خودشون دفاع نکنن…<br>
+      با سکوت، با جنون، با خشمی که شکل مرگ می‌گیره.<br>
+      کاش… ما بزرگ‌ترا، بفهمیم که بچگی رو نباید جدی نگرفت…<br>
+      باید باهاش زندگی کرد. باید نگهش داشت.<br>
+      باید حفظش کرد، تا یه روز… دنیا، از درون یه کودکِ خاموش، منفجر نشه<br><br>
+      دوست دار شما  بچه های مارکوکیلو`
+    ];
 
     let currentPage = 0;
     const contentDiv = document.getElementById("content");
-    const startScreen = document.getElementById("startScreen");
     const startButton = document.getElementById("startButton");
     const nextButton = document.getElementById("nextPage");
     const prevButton = document.getElementById("prevPage");
@@ -217,24 +212,21 @@
       setTimeout(() => {
         contentDiv.innerHTML = `<p>${pages[index]}</p>`;
         contentDiv.style.opacity = 1;
+      }, 400);
 
-        prevButtonDiv.style.display = index > 0 ? "block" : "none";
-        nextButtonDiv.style.display = index < pages.length - 1 ? "block" : "none";
-        restartDiv.style.display = index === pages.length - 1 ? "block" : "none";
-      }, 200);
+      // کنترل نمایش دکمه‌ها
+      prevButtonDiv.style.display = index === 0 ? "none" : "block";
+      nextButtonDiv.style.display = index === pages.length - 1 ? "none" : "block";
+      restartDiv.style.display = index === pages.length - 1 ? "block" : "none";
     }
 
     startButton.addEventListener("click", () => {
-      music.volume = 1.0;
-      music.play().catch(() => {
-        console.log("موزیک پخش نشد.");
-      });
-
-      // مخفی کردن صفحه شروع
-      startScreen.style.display = "none";
-
-      // نمایش صفحه اول داستان
+      document.body.classList.remove("start-screen");
+      startButton.parentElement.style.display = "none";
+      contentDiv.style.display = "block";
+      nextButtonDiv.style.display = "block";
       renderPage(currentPage);
+      music.play();
     });
 
     nextButton.addEventListener("click", () => {
@@ -254,6 +246,10 @@
     restartBtn.addEventListener("click", () => {
       currentPage = 0;
       renderPage(currentPage);
+      restartDiv.style.display = "none";
+      nextButtonDiv.style.display = "block";
+      prevButtonDiv.style.display = "none";
+      contentDiv.style.display = "block";
     });
   </script>
 </body>
