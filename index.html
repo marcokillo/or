@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>دفترچه خاطرات</title>
+  <style>
+    body {
+      background-color: #fef9f3;
+      font-family: 'Tahoma', sans-serif;
+      color: #333;
+      line-height: 2;
+      padding: 50px;
+      max-width: 800px;
+      margin: auto;
+      direction: rtl;
+      transition: opacity 0.5s ease;
+    }
+
+    .next-button {
+      display: block;
+      margin-top: 40px;
+      text-align: center;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #c0392b;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #922b21;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🎵 موسیقی فقط یک بار اجرا می‌شود -->
+  <audio id="bg-music" autoplay loop hidden>
+    <source src="https://dreamusic.ir/wp-content/uploads/2020/05/14.-Una-Mattina-Dreamusic.ir_.mp3?_=1" type="audio/mpeg">
+    مرورگر شما از پخش موزیک پشتیبانی نمی‌کند.
+  </audio>
+
+  <div id="content">
+    <!-- محتوای صفحه در اینجا بارگذاری می‌شود -->
+  </div>
+
+  <div class="next-button">
+    <button id="nextPage">صفحه بعد</button>
+  </div>
+
+  <script>
+    const pages = [
+      `امروز، 25 می 2010<br><br>
+      ده ساله که فقط سکوت کردم. فقط نگاه کردم. شاید خیلیا منو قضاوت کنن... ولی هیچ‌کس نفهمید اون شب، چه بر سرم اومد.
+      اما دیگه وقتشه. وقتشه که همه‌چیزو بگم. حداقل به خودم...
+      <br><br>
+      و بعد اسلحه رو به سمت استیو گرفتم. التماس می‌کرد، گریه می‌کرد. ولی من کشتمش. و بعدش، فقط سکوت بود.`,
+
+      `بیمار: جاناتان هریسون<br>
+      تاریخ: 1 اکتبر 2000<br>
+      شماره پرونده: JH/2000/473<br>
+      ارجاع‌دهنده: دپارتمان روان‌درمانی دانشگاه میل‌وود<br>
+      روان‌پزشک معالج: دکتر کارن اسلوآن، MD<br><br>
+      <strong>تشخیص نهایی:</strong><br>
+      اختلال تجزیه هویت (D.I.D)<br><br>
+      ...بیمار دست‌کم دو هویت مجزا دارد که در شرایط خاص (خصوصاً استرس بالا یا خیانت) فعال می‌شوند...`,
+
+      `ما گفتیم یک قتل رخ داد. گفتیم کسی سکوت کرد، کسی مُرد، و کسی دیوونه شد. ولی نگفتیم از کجا شروع شد…
+      <br><br>
+      ترومای کودکی، یه خاطره‌ی مبهم نیست. یه سمیه که آهسته وارد خون می‌شه...
+      <br><br>
+      کاش این پرونده، آخرین باری باشه که زخم‌های کودکانه، با خون شسته می‌شن.
+      <br><br>
+      دوست‌دار شما،<br>
+      بچه‌های مارکوکیلو`
+    ];
+
+    let currentPage = 0;
+    const contentDiv = document.getElementById("content");
+    const nextButton = document.getElementById("nextPage");
+
+    function renderPage(index) {
+      contentDiv.style.opacity = 0;
+      setTimeout(() => {
+        contentDiv.innerHTML = `<p>${pages[index]}</p>`;
+        contentDiv.style.opacity = 1;
+      }, 200);
+    }
+
+    nextButton.addEventListener("click", () => {
+      if (currentPage < pages.length - 1) {
+        currentPage++;
+        renderPage(currentPage);
+      } else {
+        nextButton.style.display = "none";
+      }
+    });
+
+    // بارگذاری صفحه اول هنگام شروع
+    renderPage(currentPage);
+  </script>
+</body>
+</html>
