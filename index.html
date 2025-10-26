@@ -1,256 +1,696 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <title>دفترچه خاطرات</title>
-  <style>
-    body {
-      background-color: #fef9f3;
-      font-family: 'Tahoma', sans-serif;
-      color: #333;
-      line-height: 1.4;
-      padding: 50px;
-      max-width: 900px;
-      margin: auto;
-      direction: rtl;
-      transition: opacity 0.5s ease;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>کتابخانه</title>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    .start-button, .next-button, .prev-button, .restart-button {
-      margin-top: 40px;
-      text-align: center;
-    }
+        body {
+            font-family: 'Vazir', 'Georgia', serif;
+            background: linear-gradient(135deg, #000000 0%, #2c1810 50%, #3c2f2f 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #d9d9d9;
+            overflow-x: hidden;
+            position: relative;
+        }
 
-    button {
-      padding: 10px 20px;
-      background-color: #c0392b;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 16px;
-      margin: 5px;
-    }
+        /* افکت ستاره‌های فضایی - ساده‌تر */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-image: 
+                radial-gradient(1px 1px at 20px 30px, #ccc, transparent),
+                radial-gradient(1px 1px at 40px 70px, rgba(255,255,255,0.6), transparent),
+                radial-gradient(1px 1px at 90px 40px, #aaa, transparent);
+            background-repeat: repeat;
+            background-size: 150px 100px;
+            animation: starsTwinkle 25s linear infinite;
+            z-index: -1;
+            opacity: 0.3;
+        }
 
-    button:hover {
-      background-color: #922b21;
-    }
+        @keyframes starsTwinkle {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-50px); }
+        }
 
-    #content {
-      opacity: 0;
-      transition: opacity 0.5s ease;
-    }
+        /* CRT + نویز ملایم - کم‌رنگ‌تر */
+        .crt-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 99999;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.03), rgba(0,0,0,0.03) 1px, transparent 1px, transparent 2px);
+            opacity: 0.2;
+            animation: scanline 12s linear infinite;
+        }
 
-    #content p {
-      animation: fadeInText 1s ease forwards;
-    }
+        @keyframes scanline {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 5px; }
+        }
 
-    @keyframes fadeInText {
-      0% { opacity: 0; transform: translateY(20px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
+        .noise {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            opacity: 0.005;
+            z-index: 99998;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.3'/%3E%3C/svg%3E");
+            animation: noiseMove 0.3s infinite;
+        }
 
-    @media (max-width: 600px) {
-      body {
-        padding: 20px;
-        font-size: 14px;
-      }
+        @keyframes noiseMove {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-2px, 2px); }
+        }
 
-      button {
-        width: 90%;
-        font-size: 15px;
-      }
-    }
+        .container {
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+            z-index: 10;
+            position: relative;
+            animation: fadeInUp 1s ease-out;
+        }
 
-    /* بک‌گراند صفحه شروع */
-    body.start-screen {
-      background: url('https://thumbs.dreamstime.com/b/old-book-cover-24489981.jpg') no-repeat center center fixed;
-      background-size: cover;
-      padding: 0;
-      margin: 0;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-    body.start-screen #content,
-    body.start-screen .next-button,
-    body.start-screen .prev-button,
-    body.start-screen .restart-button {
-      display: none;
-    }
+        /* عنوان مجلل - ساده‌تر */
+        h1 {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            color: #a8a8a8;
+            font-weight: 700;
+            letter-spacing: 10px;
+            text-transform: uppercase;
+            text-shadow: 
+                0 0 15px #5c4a3a,
+                0 0 30px #3c2f2f,
+                0 0 45px #000000,
+                2px 2px 0 #000;
+            margin-bottom: 50px;
+            filter: contrast(1.1) brightness(1.05);
+            position: relative;
+            animation: titlePulse 5s ease-in-out infinite;
+        }
 
-    body.start-screen .start-button {
-      position: relative;
-      z-index: 2;
-    }
-  </style>
+        @keyframes titlePulse {
+            0%, 100% { text-shadow: 0 0 15px #5c4a3a, 0 0 30px #3c2f2f, 0 0 45px #000000, 2px 2px 0 #000; }
+            50% { text-shadow: 0 0 25px #a8a8a8, 0 0 40px #a8a8a8, 0 0 55px #5c4a3a, 2px 2px 0 #000; }
+        }
+
+        /* باکس مجلل — ساده */
+        .question-box {
+            background: #2c1810;
+            border: 2px solid #3c2f2f;
+            padding: 50px 40px;
+            position: relative;
+            box-shadow: 
+                0 0 30px rgba(60,47,47,0.4),
+                inset 0 0 30px rgba(60,47,47,0.2),
+                10px 10px 0 rgba(0,0,0,0.8);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .question-box:hover {
+            box-shadow: 
+                0 0 40px rgba(60,47,47,0.6),
+                inset 0 0 30px rgba(60,47,47,0.25);
+            transform: translateY(-3px);
+        }
+
+        /* لایه داخلی ساده */
+        .question-box::before {
+            content: '';
+            position: absolute;
+            top: 10px; left: 10px; right: 10px; bottom: 10px;
+            border: 1px solid #5c4a3a;
+            pointer-events: none;
+            z-index: 1;
+            border-radius: 8px;
+            opacity: 0.5;
+        }
+
+        /* بدون قاب و گوشه‌های تزئینی - ساده */
+
+        /* بدون engraving - ساده */
+
+        .question-text {
+            font-size: clamp(1.3rem, 4vw, 1.8rem);
+            line-height: 2.2;
+            margin-bottom: 35px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.9);
+            color: #e0e0e0;
+            position: relative;
+            z-index: 5;
+            font-weight: 500;
+            letter-spacing: 1px;
+            animation: textFadeIn 1.2s ease-out;
+        }
+
+        @keyframes textFadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .answer-input {
+            width: 100%;
+            padding: 20px 25px;
+            font-size: clamp(1.2rem, 3.5vw, 1.6rem);
+            background: #1a0f00;
+            border: 2px solid #3c2f2f;
+            color: #ffffff;
+            text-align: center;
+            border-radius: 8px;
+            outline: none;
+            margin-bottom: 30px;
+            box-shadow: 
+                inset 0 3px 10px rgba(0,0,0,0.8),
+                0 0 15px rgba(60,47,47,0.3);
+            transition: all 0.3s ease;
+            font-family: 'Vazir', serif;
+            letter-spacing: 1px;
+        }
+
+        .answer-input:focus {
+            border-color: #5c4a3a;
+            box-shadow: 
+                inset 0 3px 10px rgba(0,0,0,0.8),
+                0 0 25px rgba(92,74,58,0.6),
+                0 0 35px rgba(92,74,58,0.4);
+            transform: scale(1.01);
+            background: #22150a;
+        }
+
+        .answer-input::placeholder {
+            color: #8c7a6a;
+            font-style: italic;
+            opacity: 0.7;
+        }
+
+        .submit-btn {
+            display: block;
+            width: 90%;
+            max-width: 350px;
+            margin: 0 auto;
+            padding: 20px;
+            font-size: clamp(1.3rem, 4vw, 1.7rem);
+            font-weight: 600;
+            background: linear-gradient(135deg, #3c2f2f 0%, #5c4a3a 100%);
+            border: 2px solid #3c2f2f;
+            color: #ffffff;
+            cursor: pointer;
+            border-radius: 8px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 
+                0 5px 0 #2c1810,
+                0 10px 20px rgba(0,0,0,0.7),
+                0 0 20px rgba(60,47,47,0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 5;
+            font-family: 'Vazir', serif;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 
+                0 8px 0 #2c1810,
+                0 15px 30px rgba(0,0,0,0.8),
+                0 0 30px rgba(60,47,47,0.5);
+        }
+
+        .submit-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #2c1810, 0 5px 10px rgba(0,0,0,0.6);
+        }
+
+        /* پیام خطا - ساده */
+        .error-message {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #4a1c00, #6b2800);
+            color: #ffddcc;
+            padding: 20px 35px;
+            border: 2px solid #8b3a00;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            box-shadow: 
+                0 0 30px rgba(139,58,0,0.6),
+                8px 8px 0 rgba(0,0,0,0.8),
+                inset 0 0 15px rgba(255,255,255,0.1);
+            z-index: 100000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transition: all 0.4s ease;
+            font-family: 'Vazir', serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .error-message.show {
+            opacity: 1;
+            bottom: 45px;
+        }
+
+        /* مودال مجلل - ساده */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.92);
+            z-index: 200000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: #2c1810;
+            border: 2px solid #3c2f2f;
+            padding: 50px 40px;
+            max-width: 95%;
+            width: 700px;
+            max-height: 85vh;
+            overflow-y: auto;
+            border-radius: 10px;
+            box-shadow: 
+                0 0 50px rgba(60,47,47,0.5),
+                inset 0 0 30px rgba(60,47,47,0.2),
+                15px 15px 0 rgba(0,0,0,0.9);
+            position: relative;
+            text-align: center;
+            animation: modalSlideIn 0.4s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-content::before {
+            content: '';
+            position: absolute;
+            top: 10px; left: 10px; right: 10px; bottom: 10px;
+            border: 1px solid #5c4a3a;
+            pointer-events: none;
+            border-radius: 8px;
+            opacity: 0.4;
+        }
+
+        .modal-image-wrapper {
+            margin-bottom: 30px;
+            border: 2px solid #3c2f2f;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 0 25px rgba(0,0,0,0.9);
+            cursor: zoom-in;
+            transition: all 0.3s ease;
+            max-width: 100%;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+        }
+
+        .modal-image-wrapper::after {
+            content: '\f002';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 8px; right: 8px;
+            color: #a8a8a8;
+            font-size: 1rem;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .modal-image-wrapper:hover::after {
+            opacity: 1;
+        }
+
+        .modal-image-wrapper:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 35px rgba(60,47,47,0.4);
+        }
+
+        .modal-image {
+            width: 100%;
+            height: auto;
+            filter: sepia(0.5) contrast(1.2) brightness(0.95);
+            transition: filter 0.3s ease;
+            display: block;
+        }
+
+        .modal-image-wrapper:hover .modal-image {
+            filter: sepia(0.3) contrast(1.3) brightness(1.05);
+        }
+
+        .modal-image-wrapper.zoomed {
+            transform: scale(1.8) !important;
+            z-index: 200001;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(1.8);
+            width: auto;
+            height: auto;
+            max-width: 85vw;
+            max-height: 85vh;
+            border: 1px solid #3c2f2f;
+        }
+
+        .modal-text {
+            font-size: clamp(1.3rem, 4vw, 1.8rem);
+            line-height: 2.2;
+            margin-bottom: 25px;
+            color: #e0e0e0;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.9);
+            font-weight: 500;
+            letter-spacing: 1px;
+            animation: textFadeIn 1.2s ease-out 0.1s both;
+        }
+
+        /* باکس کلید - فلش سمت راست */
+        .key-selector-container {
+            margin-top: -5px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .key-select {
+            width: 100%;
+            padding: 20px 35px 20px 20px; /* padding سمت راست بیشتر */
+            font-size: 1.4rem;
+            background: #1a0f00;
+            border: 2px solid #3c2f2f;
+            color: #d9d9d9;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: inset 0 3px 10px rgba(0,0,0,0.8), 0 0 0 1px #5c4a3a inset;
+            font-family: 'Vazir', serif;
+            transition: all 0.3s ease;
+            max-width: 100%;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%238c7a6a' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
+            background-position: left 15px center;
+            background-repeat: no-repeat;
+            background-size: 14px;
+            direction: rtl;
+            text-align: right;
+        }
+
+        .key-select:focus {
+            border-color: #5c4a3a;
+            outline: none;
+            box-shadow: 0 0 25px rgba(92,74,58,0.5), 0 0 0 2px #3c2f2f inset;
+            transform: scale(1.01);
+        }
+
+        .modal-submit-btn {
+            width: 85%;
+            max-width: 320px;
+            margin: 0 auto;
+            padding: 20px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #3c2f2f 0%, #5c4a3a 100%);
+            border: 2px solid #3c2f2f;
+            color: #ffffff;
+            cursor: pointer;
+            border-radius: 8px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 5px 0 #2c1810, 0 10px 20px rgba(0,0,0,0.7);
+            transition: all 0.3s ease;
+            font-family: 'Vazir', serif;
+        }
+
+        .modal-submit-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 0 #2c1810, 0 15px 30px rgba(0,0,0,0.8), 0 0 25px rgba(60,47,47,0.4);
+        }
+
+        .modal-submit-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #2c1810, 0 5px 10px rgba(0,0,0,0.6);
+        }
+
+        .final-message {
+            background: #1a0f00;
+            padding: 30px;
+            border: 2px solid #3c2f2f;
+            border-radius: 8px;
+            margin: 30px 0;
+            font-size: clamp(1.2rem, 3.5vw, 1.6rem);
+            line-height: 2.3;
+            text-align: justify;
+            color: #e0e0e0;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.9);
+            position: relative;
+            animation: textFadeIn 1.2s ease-out;
+        }
+
+        .final-message::before {
+            content: '';
+            position: absolute;
+            top: 10px; left: 10px; right: 10px; bottom: 10px;
+            border: 1px dashed rgba(92,74,58,0.4);
+            border-radius: 6px;
+        }
+
+        .final-image-wrapper {
+            margin: 20px auto;
+            border: 2px solid #3c2f2f;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 0 25px rgba(0,0,0,0.9);
+            max-width: 100%;
+            display: block;
+        }
+
+        .final-image {
+            width: 100%;
+            height: auto;
+            filter: sepia(0.5) contrast(1.2) brightness(0.95);
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 15px; }
+            .question-box, .modal-content { padding: 35px 25px; }
+            .submit-btn, .modal-submit-btn { width: 96%; padding: 18px; font-size: 1.2rem; letter-spacing: 1.5px; }
+            h1 { letter-spacing: 6px; margin-bottom: 35px; font-size: clamp(2rem, 7vw, 3.5rem); }
+            .key-selector-container { margin-bottom: 25px; }
+            .answer-input { padding: 18px 20px; font-size: 1.3rem; margin-bottom: 25px; }
+            .question-text { margin-bottom: 25px; font-size: 1.2rem; line-height: 1.8; }
+            .modal-image-wrapper { margin-bottom: 20px; }
+            .modal-text { margin-bottom: 20px; font-size: 1.2rem; line-height: 1.8; }
+            .error-message { padding: 15px 25px; font-size: 1rem; width: 92%; left: 4%; transform: none; }
+            .final-message { padding: 25px; font-size: 1.1rem; line-height: 1.8; margin: 20px 0; }
+            .key-select { padding: 18px 30px 18px 18px; font-size: 1.2rem; background-position: left 12px center; }
+            .final-image-wrapper { margin: 15px auto; }
+        }
+
+        @media (max-width: 768px) {
+            .container { max-width: 98%; }
+            .question-box { padding: 40px 30px; }
+            .modal-content { padding: 40px 30px; width: 98%; }
+        }
+    </style>
 </head>
-<body class="start-screen">
+<body>
+    <div class="crt-overlay"></div>
+    <div class="noise"></div>
 
-  <!-- موزیک پس‌زمینه -->
-  <audio id="bg-music" loop hidden>
-    <source src="https://dreamusic.ir/wp-content/uploads/2020/05/14.-Una-Mattina-Dreamusic.ir_.mp3?_=1" type="audio/mpeg">
-    مرورگر شما از پخش موزیک پشتیبانی نمی‌کند.
-  </audio>
+    <div class="container">
+        <h1>کتابخانه</h1>
 
-  <!-- دکمه شروع -->
-  <div class="start-button">
-    <button id="startButton">شروع</button>
-  </div>
+        <div class="question-box">
 
-  <!-- محتوای داستان -->
-  <div id="content"></div>
+            <p class="question-text">
+                پس از حل معما به چه کلمه‌ای و یا عبارتی رسیدید؟
+            </p>
 
-  <!-- دکمه‌ها -->
-  <div class="prev-button" style="display: none;">
-    <button id="prevPage">صفحه قبل</button>
-  </div>
+            <input type="text" class="answer-input" placeholder="رمز را وارد کنید..." autocomplete="off">
 
-  <div class="next-button" style="display: none;">
-    <button id="nextPage">صفحه بعد</button>
-  </div>
+            <button class="submit-btn">ارسال پاسخ</button>
+        </div>
+    </div>
 
-  <div class="restart-button" style="display: none;">
-    <button id="restartBtn">شروع دوباره</button>
-  </div>
+    <div class="error-message">
+        <span><i class="fas fa-exclamation-triangle"></i> پاسخ نادرست! دوباره تلاش کن.</span>
+    </div>
 
-  <script>
-    const pages = [
-      // صفحه ۱
-      `امروز، 25 می 2010<br><br>
-      ده ساله که فقط سکوت کردم. فقط نگاه کردم. شاید خیلیا منو قضاوت کنن... ولی هیچ‌کس نفهمید اون شب، چه بر سرم اومد.<br>
-      اما دیگه وقتشه. وقتشه که همه‌چیزو بگم. حداقل به خودم.<br><br>
-      ده سال پیش... روزی که استیو مرد... دوباره دیدمش. همون سایه‌ای که مدت‌ها دنبالم می‌کرد. همیشه فقط یه سایه بود. دور، گنگ... اما اون روز، نزدیک‌تر از همیشه ایستاده بود.<br>
-      نقاشی‌ام رو نیمه‌کاره رها کردم و دویدم توی خونه. داشتم همون سایه رو می‌کشیدم. فقط یه بدن بی‌چهره.<br>
-      همه‌چیز خیلی سریع اتفاق افتاد. از در پشتی اومد تو. بدون در زدن.<br>
-      کلید یدکی، همیشه توی گلدون کنار در بود... همون‌جایی که فقط خودم می‌دونستم.<br>
-      ولی اون... اون هم می‌دونست.<br><br>
-      اسلحه‌ای رو سمتم گرفت. تا چشم بهم زدم، به صندلی بسته شده بودم. چند دقیقه بعد، استیو برگشت. فریاد زدم، تلاش کردم... اما دیر شده بود.<br>
-      او هم به صندلی بسته شد. پشت سر من.<br>
-      تا اون لحظه، فکر می‌کردم استیو قربانیه. اما وقتی اون مرد شروع کرد به حرف زدن... دنیا از هم پاشید.<br>
-      گفت که استیو با همسرش، کاترین، رابطه داشته. استیو؟<br>
-      عشق زندگی من؟<br><br>
-      اون هنوز حرف می‌زد. گفت که منو دنبال می‌کرده، چون می‌خواسته بدونه زن یک مرد کثیف چه جور آدمیه. ولی فهمیده که من هم فقط یه قربانی‌ام.<br>
-      و بعد اسلحه رو به سمت استیو گرفت و گفت باید انتخاب کنه؛ زندگی خودش یا من.<br>
-      شروع کرد به شمردن.<br><br>
-      یک...<br>
-      دو...<br>
-      و استیو گفت:<br>
-      «من نمی‌خوام بمیرم... اونو بکش... لطفاً... من نمی‌خوام بمیرم...»<br><br>
-      همه‌چیز اون‌جا برای من تموم شد.<br>
-      عشق، اعتماد، زندگی.<br><br>
-      مرد اسلحه رو بالا گرفت، یک تیر به سقف زد.<br>
-      بعد اومد جلو، دست‌هامو باز کرد، اسلحه رو گذاشت کف دستم و بدون یه کلمه از خونه رفت.<br>
-      و من می‌دونستم باید چیکار کنم.<br><br>
-      اسلحه رو سمت استیو گرفتم. التماس می‌کرد، گریه می‌کرد.<br>
-      ولی من کشتمش.<br>
-      و بعدش، فقط سکوت بود.<br><br>
-      ده سال گذشت. تا اینکه دوباره دیدمش.<br>
-      پس اسمش این بود<br>
-      جاناتان...<br>
-      کارآگاهی که پرونده قتل استیو رو بعد ده سال پیگیری می‌کرد. همون مردی که این بازی رو شروع کرده بود.`,
+    <!-- مودال اصلی -->
+    <div class="modal-overlay" id="mainModal">
+        <div class="modal-content">
+            <div class="modal-image-wrapper">
+                <img src="a.jpg" alt="تصویر کلید" class="modal-image">
+            </div>
 
-      // صفحه ۲
-      `بیمار: جاناتان هریسون<br>
-      تاریخ: 1 اکتبر 2000<br>
-      شماره پرونده: JH/2000/473<br>
-      ارجاع‌دهنده: دپارتمان روان‌درمانی دانشگاه میل‌وود<br>
-      روان‌پزشک معالج: دکتر کارن اسلوآن، MD<br>
-      تخصص: روان‌پزشکی بالینی – اختلالات تجزیه‌ای و هویتی<br><br>
-      <strong>تشخیص نهایی:</strong> اختلال تجزیه هویت (D.I.D) مطابق با ملاک‌های DSM-IV<br><br>
-      <strong>شرح مختصر و ارزیابی بالینی:</strong><br>
-      بیمار، آقای جاناتان هریسون، مردی ۳۵ ساله، با سابقه‌ی عملکرد تحصیلی و حرفه‌ای ممتاز در رشته روان‌شناسی جنایی، جهت ارزیابی روان‌پزشکی به این مرکز ارجاع داده شد. گزارش‌ها حاکی از بروز نوسانات رفتاری، فواصل زمانی از دست‌رفته، و حالات احساسی و کلامی متضاد است.<br>
-      بیمار در جلسات چندین بار به‌طور ناخودآگاه تغییر لحن، زبان بدنی و سبک گفتار داشت. خاطرات ناپیوسته، احساس غریبه بودن نسبت به تصمیمات خود، و بی‌اطلاعی از اتفاقاتی که توسط «خود دیگر» انجام شده‌اند، از ویژگی‌های بارز مشاهده‌شده بودند.<br>
-      با توجه به مصاحبه‌های بالینی، آزمون‌های SCID-D و ارزیابی شش‌هفته‌ای، تشخیص اختلال تجزیه هویت قطعی بود.`,
+            <p class="modal-text">
+                این کلید در راهرو با کدام کلید مطابقت دارد؟
+            </p>
 
-      // صفحه ۳ (اصلاح شده)
-      `ما گفتیم یک قتل رخ داد.<br><br>
-      گفتیم کسی سکوت کرد، کسی مُرد، و کسی دیوونه شد.<br>
-      ولی نگفتیم از کجا شروع شد…<br>
-      هیچ‌کس نگفت از شبی که اون بچه با چشم‌های پر اشک، پشت در بسته‌ی یه اتاق خوابید.<br>
-      از وقتی ترس، شد عادی‌ترین حسش.<br>
-      از وقتی یاد گرفت دردش رو پنهون کنه، چون کسی حوصله‌شو نداشت.<br>
-      هیچ‌کس اون شب‌ها رو ندید.<br>
-      وقتی بغض رو قورت می‌داد و به خودش می‌گفت:<br>
-      «من مهم نیستم.»<br><br>
-      پرونده‌ای که خوندین، فقط درباره‌ی یه قتل نبود.<br>
-      یه آینه بود؛<br>
-      که خیلی از ما جرات نکردیم توش زل بزنیم.<br><br>
-      ترومای کودکی، یه خاطره‌ی مبهم نیست.<br>
-      یه سمیه که آهسته وارد خون می‌شه…<br>
-      و یه روز، بی‌هوا، یه آدم رو منفجر می‌کنه.<br><br>
-      کسی قاتل می‌شه…<br>
-      ولی قبلش هزار بار مرده بوده.<br><br>
-      ما این پرونده رو ساختیم، نه برای قضاوت.<br>
-      برای اینکه بفهمیم چقدر آسیب، می‌تونه بی‌صدا توی یه انسان ریشه کنه…<br>
-      فقط چون کسی وقت نکرد بپرسه:<br>
-      «چی شده؟»<br><br>
-      کاش این پرونده، آخرین باری باشه که زخم‌های کودکانه، با خون شسته می‌شن.<br>
-      کاش بچه‌های فردا، اینجوری از خودشون دفاع نکنن…<br>
-      با سکوت، با جنون، با خشمی که شکل مرگ می‌گیره.<br>
-      کاش… ما بزرگ‌ترا، بفهمیم که بچگی رو نباید جدی نگرفت…<br>
-      باید باهاش زندگی کرد. باید نگهش داشت.<br>
-      باید حفظش کرد، تا یه روز… دنیا، از درون یه کودکِ خاموش، منفجر نشه<br><br>
-      دوست دار شما  بچه های مارکوکیلو`
-    ];
+            <!-- باکس کلید -->
+            <div class="key-selector-container">
+                <select class="key-select" id="keySelect">
+                    <option value="1">کلید ۱</option>
+                    <option value="2">کلید ۲</option>
+                    <option value="3">کلید ۳</option>
+                    <option value="4">کلید ۴</option>
+                    <option value="5">کلید ۵</option>
+                    <option value="6">کلید ۶</option>
+                    <option value="7">کلید ۷</option>
+                    <option value="8">کلید ۸</option>
+                    <option value="9">کلید ۹</option>
+                    <option value="10">کلید ۱۰</option>
+                    <option value="11">کلید ۱۱</option>
+                    <option value="12">کلید ۱۲</option>
+                </select>
+            </div>
 
-    let currentPage = 0;
-    const contentDiv = document.getElementById("content");
-    const startButton = document.getElementById("startButton");
-    const nextButton = document.getElementById("nextPage");
-    const prevButton = document.getElementById("prevPage");
-    const restartBtn = document.getElementById("restartBtn");
-    const nextButtonDiv = document.querySelector(".next-button");
-    const prevButtonDiv = document.querySelector(".prev-button");
-    const restartDiv = document.querySelector(".restart-button");
-    const music = document.getElementById("bg-music");
+            <button class="modal-submit-btn" id="finalSubmit">ارسال</button>
+        </div>
+    </div>
 
-    function renderPage(index) {
-      contentDiv.style.opacity = 0;
-      setTimeout(() => {
-        contentDiv.innerHTML = `<p>${pages[index]}</p>`;
-        contentDiv.style.opacity = 1;
-      }, 400);
+    <!-- مودال نهایی -->
+    <div class="modal-overlay" id="finalModal">
+        <div class="modal-content">
+            <div class="final-message">
+                شلف را می‌کشید.با یک کلیک مکانیکی،لرزش مختصری دارد.قفسه کتاب به راحتی به بیرون می‌چرخد و شما متوجه یک علامت سوخته در پشت آن می‌شوید.
+            </div>
+            <div class="final-image-wrapper">
+                <img src="b.jpg" alt="تصویر جایگذاری" class="final-image">
+            </div>
+            <div class="final-message">
+                در داخل، یک اتاق کوچک با چندین شکاف باریک در دیوارها پیدا می‌کنید. یکی از شکاف‌ها در همان قفسه‌ای که از آن عبور کردید قرار دارد و دیدی به کتابخانه فراهم می‌کند. شکاف دیگری در دیوار مقابل،دیدی به سیاهچال دارد.
+در یک گوشه، یک ترمز دستی مشابه ترمزی که قبلاً در قطار نصب کرده بودید، روی دیوار نصب شده و عبارت "شو-استاپر" روی یک پلاک در زیر آن حک شده است. در مرکز اتاق، یک میز کوچک می‌بینید که روی آن تعدادی بریده روزنامه و یک نامه از ریگر قرار دارد.متوجه می‌شوید پشت نامه همان علامتی است که روی قفسه کتاب بود.احتمالاً اکنون مفید نخواهد بود،اما باید آن را به خاطر بسپارید.
+اکنون پاکت «هر زمان دستوری دریافت کردید،درب پاکت را باز کنید»را،باز کنید
+            </div>
+           
+        </div>
+    </div>
 
-      // کنترل نمایش دکمه‌ها
-      prevButtonDiv.style.display = index === 0 ? "none" : "block";
-      nextButtonDiv.style.display = index === pages.length - 1 ? "none" : "block";
-      restartDiv.style.display = index === pages.length - 1 ? "block" : "none";
-    }
+    <script>
+        const answerInput = document.querySelector('.answer-input');
+        const submitBtn = document.querySelector('.submit-btn');
+        const errorMsg = document.querySelector('.error-message');
+        const mainModal = document.getElementById('mainModal');
+        const finalModal = document.getElementById('finalModal');
+        const keySelect = document.getElementById('keySelect');
+        const finalSubmit = document.getElementById('finalSubmit');
+        const closeFinal = document.getElementById('closeFinal');
 
-    startButton.addEventListener("click", () => {
-      document.body.classList.remove("start-screen");
-      startButton.parentElement.style.display = "none";
-      contentDiv.style.display = "block";
-      nextButtonDiv.style.display = "block";
-      renderPage(currentPage);
-      music.play();
-    });
+        const CORRECT_CODE = "عقاب";
+        const CORRECT_KEY = "8";
 
-    nextButton.addEventListener("click", () => {
-      if (currentPage < pages.length - 1) {
-        currentPage++;
-        renderPage(currentPage);
-      }
-    });
+        function showError() {
+            errorMsg.classList.add('show');
+            setTimeout(() => errorMsg.classList.remove('show'), 3000);
+        }
 
-    prevButton.addEventListener("click", () => {
-      if (currentPage > 0) {
-        currentPage--;
-        renderPage(currentPage);
-      }
-    });
+        // بهبود ارسال پاسخ: case insensitive و نادیده گرفتن کامل فاصله‌ها
+        submitBtn.addEventListener('click', () => {
+            const userAnswer = answerInput.value.trim().toLowerCase().replace(/\s+/g, '');
+            const correct = CORRECT_CODE.toLowerCase().replace(/\s+/g, '');
+            if (userAnswer === correct) {
+                mainModal.classList.add('active');
+                answerInput.value = '';
+            } else {
+                showError();
+                answerInput.value = '';
+            }
+        });
 
-    restartBtn.addEventListener("click", () => {
-      currentPage = 0;
-      renderPage(currentPage);
-      restartDiv.style.display = "none";
-      nextButtonDiv.style.display = "block";
-      prevButtonDiv.style.display = "none";
-      contentDiv.style.display = "block";
-    });
-  </script>
+        answerInput.addEventListener('keypress', e => {
+            if (e.key === 'Enter') submitBtn.click();
+        });
+
+        // ارسال کلید: مستقیم بدون وقفه
+        finalSubmit.addEventListener('click', () => {
+            if (keySelect.value === CORRECT_KEY) {
+                mainModal.classList.remove('active');
+                finalModal.classList.add('active');
+                keySelect.value = "1"; // ریست
+            } else {
+                showError();
+            }
+        });
+
+        closeFinal.addEventListener('click', () => {
+            finalModal.classList.remove('active');
+            answerInput.value = '';
+            keySelect.value = "1";
+        });
+
+        document.querySelector('.modal-image-wrapper').addEventListener('click', function() {
+            this.classList.toggle('zoomed');
+        });
+
+        [mainModal, finalModal].forEach(modal => {
+            modal.addEventListener('click', e => {
+                if (e.target === modal) modal.classList.remove('active');
+            });
+        });
+
+        // بستن زوم تصویر با کلیک خارج
+        document.addEventListener('click', function(e) {
+            const wrapper = document.querySelector('.modal-image-wrapper');
+            if (wrapper && wrapper.classList.contains('zoomed') && !wrapper.contains(e.target)) {
+                wrapper.classList.remove('zoomed');
+            }
+        });
+    </script>
 </body>
 </html>
